@@ -1,12 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "dwli4a6y8RcCpF6kj80SRY/nGw8OvgsggEo6Ej0+aF7oPWkJtHPTw5ytgqlRO476p/WAwjfNGPRK14nunh4ULw==",
+  "dgSpecHash": "Ga0NXxMMbS39+iiGLH3UyRmCQeiKkRilb/Q5iLu2zvcbA9Q7wL2brUXZmkxOb1sIjuF1Q2rds798QxXjd1ZicQ==",
   "success": true,
   "projectFilePath": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\PaintAGrid.Web\\PaintAGrid.Web.csproj",
   "expectedPackageFiles": [
+    "D:\\packages\\NuGet\\cache\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",
     "D:\\packages\\NuGet\\cache\\microsoft.aspnetcore.openapi\\8.0.7\\microsoft.aspnetcore.openapi.8.0.7.nupkg.sha512",
     "D:\\packages\\NuGet\\cache\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "D:\\packages\\NuGet\\cache\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "D:\\packages\\NuGet\\cache\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
     "D:\\packages\\NuGet\\cache\\microsoft.openapi\\1.4.3\\microsoft.openapi.1.4.3.nupkg.sha512",
+    "D:\\packages\\NuGet\\cache\\npgsql\\8.0.3\\npgsql.8.0.3.nupkg.sha512",
     "D:\\packages\\NuGet\\cache\\swashbuckle.aspnetcore\\6.4.0\\swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
     "D:\\packages\\NuGet\\cache\\swashbuckle.aspnetcore.swagger\\6.4.0\\swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",
     "D:\\packages\\NuGet\\cache\\swashbuckle.aspnetcore.swaggergen\\6.4.0\\swashbuckle.aspnetcore.swaggergen.6.4.0.nupkg.sha512",

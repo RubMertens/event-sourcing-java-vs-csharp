@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Dapper;
 using Npgsql;
 
@@ -5,64 +6,23 @@ namespace Framework;
 
 public class EventStore(NpgsqlConnection connection)
 {
+    public async Task Init()
+    {
+        await CreateEventStoreTable();
+        await CreateAppendEventFunction();
+    }
+
     public async Task AppendEvent(object @event, string eventType, Guid streamId, long? expectedVersion)
     {
-        await CheckVersion(streamId, expectedVersion);
-        var appendEventSql = """
-                             DO $$ 
-                             BEGIN
-                                DECLARE stream_version int;
-                                SELECT position INTO stream_version;
-                                    FROM event_store
-                                    WHERE stream_id = :streamId
-                                    ORDER BY position DESC
-                                    LIMIT 1;
-                                    
-                                IF :expected_version IS NOT NULL AND stream_version != :expected_version THEN
-                                    RAISE EXCEPTION 'WrongExpectedVersion';
-                                    RETURN;
-                                END IF;
-                                
-                                stream_version := stream_version + 1;
-                                
-                                INSERT INTO event_store 
-                                    (stream_id, position, event_type, event_data, metadata)
-                             END $$;
-                             """;
-    }
-
-
-    private async Task<long?> GetLastPositionOf(Guid streamId)
-    {
-        await using var cmd = new NpgsqlCommand(@"
-            SELECT position FROM event_store
-            WHERE stream_id = @streamId
-            ORDER BY position DESC
-            LIMIT 1
-        ", connection);
-        cmd.Parameters.AddWithValue("streamId", streamId);
-        var position = await cmd.ExecuteScalarAsync();
-        return (long?)position;
-    }
-
-    private async Task CheckVersion(Guid streamId, long? expectedVersion)
-    {
-        var lastPositionInStream = await GetLastPositionOf(streamId);
-        if (lastPositionInStream == null)
-        {
-            if (expectedVersion != null && expectedVersion != 0)
+        await connection.QuerySingleAsync(
+            "SELECT append_event(@p_event, @p_event_type, @p_stream_id, @p_expected_version)",
+            new
             {
-                throw new Exception("Stream not found");
-            }
-        }
-        else
-        {
-            if (expectedVersion != null && lastPositionInStream != expectedVersion)
-            {
-                throw new Exception(
-                    $"Version conflict, expected version {expectedVersion} but found {lastPositionInStream}");
-            }
-        }
+                p_event = JsonSerializer.Serialize(@event),
+                p_event_type = eventType,
+                p_stream_id = streamId,
+                p_expected_version = expectedVersion
+            });
     }
 
     private async Task CreateEventStoreTable()
@@ -80,5 +40,39 @@ public class EventStore(NpgsqlConnection connection)
             );
         ", connection);
         await cmd.ExecuteNonQueryAsync();
+    }
+
+    private async Task CreateAppendEventFunction()
+    {
+        await using var cmd = new NpgsqlCommand(
+            """
+            CREATE OR REPLACE FUNCTION append_event(
+                                        p_event JSONB,
+                                        p_event_type TEXT,
+                                        p_stream_id UUID,
+                                        p_expected_version BIGINT
+                                    ) RETURNS VOID AS $$
+                                    DECLARE
+                                        latest_version BIGINT;
+                                    BEGIN
+                                        -- Get the latest version for the given stream_id
+                                        SELECT COALESCE(MAX(position), -1) INTO latest_version
+                                        FROM event_store
+                                        WHERE stream_id = p_stream_id;
+                                            
+                                        -- Check if the expected version matches the latest version
+                                        IF p_expected_version = 0 AND latest_version != -1 THEN
+                                            RAISE EXCEPTION 'Expected version is 0 but stream already has events';
+                                        ELSIF p_expected_version > 0 AND latest_version != p_expected_version THEN
+                                            RAISE EXCEPTION 'Expected version % does not match the latest version %',
+                                                            p_expected_version, latest_version;
+                                        END IF;
+                                        
+                                        -- Insert the new event with the next position
+                                        INSERT INTO event_store (stream_id, position, event_type, event_data, metadata)
+                                        VALUES (p_stream_id, latest_version + 1, p_event_type, p_event, '{}');
+                                    END;
+                                    $$ LANGUAGE plpgsql;
+            """);
     }
 }

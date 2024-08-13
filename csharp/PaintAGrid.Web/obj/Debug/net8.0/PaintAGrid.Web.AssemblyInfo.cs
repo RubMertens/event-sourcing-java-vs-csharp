@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PaintAGrid.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d22a978a8e41a604bd6d2a8704f65522839c7442")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1121eb86d3b7f7597d59588fa4256f166277d330")]
 [assembly: System.Reflection.AssemblyProductAttribute("PaintAGrid.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PaintAGrid.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
