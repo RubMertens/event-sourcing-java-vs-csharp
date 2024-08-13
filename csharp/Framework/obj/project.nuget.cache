@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "isiIh8o2wv7cLHLQ6cRBFH1BJAqbgLPKOXNCQu9TQrMLbgCxNf0Pew8Pp9QJhMWmf4OWjSg0YSNlmMaZ1Kq1Tw==",
+  "dgSpecHash": "q+KlJFKYvoryRv+j3LT86M/FS26o1wSoD/Uf0Ba1Vu31P2Gh6W8KvQZVytypfCjpvj3mfLOmJ6tBy0TbE4x02g==",
   "success": true,
   "projectFilePath": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "D:\\packages\\NuGet\\cache\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",
+    "D:\\packages\\NuGet\\cache\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "D:\\packages\\NuGet\\cache\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "D:\\packages\\NuGet\\cache\\npgsql\\8.0.3\\npgsql.8.0.3.nupkg.sha512"
+  ],
   "logs": []
 }
