@@ -1,0 +1,6 @@
+﻿services:
+  paintagrid.web:
+    image: paintagrid.web
+    build:
+      context: .
+      dockerfile: PaintAGrid.Web/Dockerfile

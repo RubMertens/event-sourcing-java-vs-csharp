@@ -1,0 +1,6 @@
+@PaintAGrid.Web_HostAddress = http://localhost:5245
+
+GET {{PaintAGrid.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
