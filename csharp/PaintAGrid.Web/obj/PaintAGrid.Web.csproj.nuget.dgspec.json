@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\PaintAGrid.Web\\PaintAGrid.Web.csproj": {}
+    "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\PaintAGrid.Web\\PaintAGrid.Web.csproj": {}
   },
   "projects": {
-    "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj": {
+    "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj",
+        "projectUniqueName": "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj",
         "projectName": "Framework",
-        "projectPath": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj",
-        "packagesPath": "D:\\packages\\NuGet\\cache",
-        "outputPath": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\Framework\\obj\\",
+        "projectPath": "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj",
+        "packagesPath": "C:\\Users\\Ruben\\.nuget\\packages\\",
+        "outputPath": "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\Framework\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\RubenM\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Ruben\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -63,21 +63,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\PaintAGrid.Web\\PaintAGrid.Web.csproj": {
+    "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\PaintAGrid.Web\\PaintAGrid.Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\PaintAGrid.Web\\PaintAGrid.Web.csproj",
+        "projectUniqueName": "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\PaintAGrid.Web\\PaintAGrid.Web.csproj",
         "projectName": "PaintAGrid.Web",
-        "projectPath": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\PaintAGrid.Web\\PaintAGrid.Web.csproj",
-        "packagesPath": "D:\\packages\\NuGet\\cache",
-        "outputPath": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\PaintAGrid.Web\\obj\\",
+        "projectPath": "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\PaintAGrid.Web\\PaintAGrid.Web.csproj",
+        "packagesPath": "C:\\Users\\Ruben\\.nuget\\packages\\",
+        "outputPath": "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\PaintAGrid.Web\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\RubenM\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Ruben\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -89,8 +89,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj": {
-                "projectPath": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj"
+              "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj": {
+                "projectPath": "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj"
               }
             }
           }
@@ -133,7 +133,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
