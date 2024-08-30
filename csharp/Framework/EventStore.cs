@@ -1,11 +1,12 @@
 using System.Text.Json;
 using Dapper;
 using Npgsql;
+using PaintAGrid.Web.SqlConnection;
 
 namespace Framework;
 
 public class EventStore(
-    NpgsqlConnection connection,
+    IDbConnectionFactory connectionFactory,
     IEventTypeRegistry eventTypeRegistry
 )
 {
@@ -43,32 +44,33 @@ public class EventStore(
         }
     }
 
-    public async Task<TAggregate> AggregateStreamFromSnapshot<TAggregate>(Guid streamId)
-    where TAggregate: IAggregate
+    public async Task<TAggregate> AggregateStreamFromSnapshot<TAggregate>(
+        Guid streamId)
+        where TAggregate : IAggregate
     {
         var snapshotHandler =
             snapshotHandlers.GetValueOrDefault(typeof(TAggregate));
         TAggregate aggregate = default;
         if (snapshotHandler != null)
-            
+
         {
-            aggregate =  await ((ISnapshotter<TAggregate>)snapshotHandler)
+            aggregate = await ((ISnapshotter<TAggregate>)snapshotHandler)
                 .Load(streamId);
         }
+
         aggregate ??= Activator.CreateInstance<TAggregate>();
         var events = await GetEventFrom(streamId, aggregate.Version);
         foreach (var @event in events)
         {
             aggregate.InvokeApplyMethod(@event);
         }
+
         return aggregate;
     }
-    
+
     public async Task<TAggregate> AggregateStream<TAggregate>(Guid streamId,
         int? untilVerion = null)
     {
-        
-
         var events = untilVerion.HasValue
             ? await GetEventsUntil(streamId, untilVerion.Value)
             : await GetEvents(streamId);
@@ -93,6 +95,7 @@ public class EventStore(
     public async Task<IEnumerable<object>> GetEventFrom(Guid streamId,
         int fromVersion)
     {
+        var connection = connectionFactory.GetConnection();
         var results = await connection.QueryAsync<dynamic>(
             """
                 SELECT event_data, event_type
@@ -112,6 +115,7 @@ public class EventStore(
     public async Task<IEnumerable<object>> GetEventsUntil(Guid streamId,
         int untilVersion)
     {
+        var connection = connectionFactory.GetConnection();
         var results = await connection.QueryAsync<dynamic>(
             """
                 SELECT event_data, event_type
@@ -130,6 +134,7 @@ public class EventStore(
 
     public async Task<IEnumerable<object>> GetEvents(Guid streamId)
     {
+        var connection = connectionFactory.GetConnection();
         var results = await connection.QueryAsync<dynamic>(
             """
                 SELECT event_data, event_type
@@ -151,6 +156,7 @@ public class EventStore(
     {
         try
         {
+            var connection = connectionFactory.GetConnection();
             await connection.QuerySingleAsync(
                 "SELECT append_event(@p_event::jsonb, @p_event_type, @p_stream_id, @p_expected_version)",
                 new
@@ -170,6 +176,7 @@ public class EventStore(
 
     private async Task CreateEventStoreTable()
     {
+        var connection = connectionFactory.GetConnection();
         await connection.ExecuteAsync("""
                                       CREATE TABLE IF NOT EXISTS event_store (
                                           id SERIAL PRIMARY KEY,
@@ -186,6 +193,7 @@ public class EventStore(
 
     private async Task CreateAppendEventFunction()
     {
+        var connection = connectionFactory.GetConnection();
         await connection.ExecuteAsync("""
                                         CREATE OR REPLACE FUNCTION append_event(
                                                                   p_event JSONB,

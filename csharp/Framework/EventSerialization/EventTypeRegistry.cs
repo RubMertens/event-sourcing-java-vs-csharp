@@ -5,10 +5,11 @@ public class EventTypeRegistry : IEventTypeRegistrar, IEventTypeRegistry
     private Dictionary<string, Type> _registryByName = new();
     private Dictionary<Type, string> _registryByType = new();
 
-    public void Register<T>(string eventType)
+    public IEventTypeRegistrar Register<T>(string eventType)
     {
         _registryByName[eventType] = typeof(T);
         _registryByType[typeof(T)] = eventType;
+        return this;
     }
 
     public Type GetTypeByName(string eventType)

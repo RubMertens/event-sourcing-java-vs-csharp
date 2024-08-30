@@ -7,14 +7,24 @@
     depends_on:
       - postgres
   postgres:
-    image: postgres:14-alpine
+    image: postgres:16-alpine
     ports:
       - 5432:5432
     volumes:
       - ~/apps/postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=password
-
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=paintagrid
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 5050:80
+    depends_on:
+        - postgres
+    environment:
+       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+       - PGADMIN_DEFAULT_PASSWORD=root
   json-server:
     image: clue/json-server
     ports:

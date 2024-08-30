@@ -4,6 +4,7 @@ using System.Runtime.InteropServices.JavaScript;
 using Dapper;
 using FluentAssertions;
 using Npgsql;
+using PaintAGrid.Web.SqlConnection;
 using SimpleMigrations;
 using SimpleMigrations.DatabaseProvider;
 using Testcontainers.PostgreSql;
@@ -50,11 +51,11 @@ public class UserAggregate : Aggregate
 }
 
 [Migration(1, "Create user snapshot table")]
-    public class UserSnapshotTable: Migration
+public class UserSnapshotTable : Migration
+{
+    protected override void Up()
     {
-        protected override void Up()
-        {
-            Execute(@"
+        Execute(@"
                 CREATE TABLE IF NOT EXISTS ""user"" (
                     ""streamid"" UUID NOT NULL PRIMARY KEY,
                     ""version"" INT NOT NULL,
@@ -62,15 +63,15 @@ public class UserAggregate : Aggregate
                     ""phone_number"" TEXT
                 )
             ");
-        }
-
-        protected override void Down()
-        {
-            Execute(@"DROP TABLE IF EXISTS ""user""");
-        }
     }
 
-    public class EventStoreTests
+    protected override void Down()
+    {
+        Execute(@"DROP TABLE IF EXISTS ""user""");
+    }
+}
+
+public class EventStoreTests
 {
     private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
         .WithImage("postgres:14-alpine")
@@ -84,8 +85,9 @@ public class UserAggregate : Aggregate
     public async Task OneTimeSetup()
     {
         await _postgres.StartAsync();
-        
-        await using var connection = new NpgsqlConnection(_postgres.GetConnectionString());
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
+        await using var connection = factory.GetConnection();
         var migrator = new SimpleMigrator(typeof(EventStoreTests).Assembly,
             new PostgresqlDatabaseProvider(connection));
         migrator.Load();
@@ -101,7 +103,6 @@ public class UserAggregate : Aggregate
     [SetUp]
     public async Task Setup()
     {
-
     }
 
     [TearDown]
@@ -118,10 +119,11 @@ public class UserAggregate : Aggregate
         var registry = new EventTypeRegistry();
         registry.Register<UserCreated>(nameof(UserCreated));
         registry.Register<PhoneNumberAssigned>(nameof(PhoneNumberAssigned));
-
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
         var eventStore =
             new EventStore(
-                new NpgsqlConnection(_postgres.GetConnectionString()),
+                factory,
                 registry);
 
         await eventStore.Init();
@@ -135,9 +137,10 @@ public class UserAggregate : Aggregate
     {
         var registry = new EventTypeRegistry();
         registry.Register<UserCreated>(nameof(UserCreated));
-
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
         var store = new EventStore(
-            new NpgsqlConnection(_postgres.GetConnectionString()),
+            factory,
             registry);
         await store.Init();
 
@@ -154,9 +157,10 @@ public class UserAggregate : Aggregate
     {
         var registry = new EventTypeRegistry();
         registry.Register<UserCreated>(nameof(UserCreated));
-
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
         var store = new EventStore(
-            new NpgsqlConnection(_postgres.GetConnectionString()),
+            factory,
             registry);
         await store.Init();
 
@@ -175,9 +179,10 @@ public class UserAggregate : Aggregate
     {
         var registry = new EventTypeRegistry();
         registry.Register<UserCreated>(nameof(UserCreated));
-
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
         var store = new EventStore(
-            new NpgsqlConnection(_postgres.GetConnectionString()),
+            factory,
             registry);
         await store.Init();
 
@@ -203,9 +208,10 @@ public class UserAggregate : Aggregate
         var registry = new EventTypeRegistry();
         registry.Register<UserCreated>(nameof(UserCreated));
         registry.Register<PhoneNumberAssigned>(nameof(PhoneNumberAssigned));
-
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
         var store = new EventStore(
-            new NpgsqlConnection(_postgres.GetConnectionString()),
+            factory,
             registry);
         await store.Init();
 
@@ -229,9 +235,11 @@ public class UserAggregate : Aggregate
         var registry = new EventTypeRegistry();
         registry.Register<UserCreated>(nameof(UserCreated));
         registry.Register<PhoneNumberAssigned>(nameof(PhoneNumberAssigned));
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
 
         var store = new EventStore(
-            new NpgsqlConnection(_postgres.GetConnectionString()),
+            factory,
             registry);
         await store.Init();
 
@@ -260,9 +268,11 @@ public class UserAggregate : Aggregate
         var registry = new EventTypeRegistry();
         registry.Register<UserCreated>(nameof(UserCreated));
         registry.Register<PhoneNumberAssigned>(nameof(PhoneNumberAssigned));
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
         var store =
             new EventStore(
-                new NpgsqlConnection(_postgres.GetConnectionString()),
+                factory,
                 registry);
         await store.Init();
 
@@ -297,9 +307,12 @@ public class UserAggregate : Aggregate
         var registry = new EventTypeRegistry();
         registry.Register<UserCreated>(nameof(UserCreated));
         registry.Register<PhoneNumberAssigned>(nameof(PhoneNumberAssigned));
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
+
         var store =
             new EventStore(
-                new NpgsqlConnection(_postgres.GetConnectionString()),
+                factory,
                 registry);
         await store.Init();
         var streamId = new Guid("4FB49AB5-9153-4070-A0E8-2F451BCD0BF5");
@@ -326,9 +339,11 @@ public class UserAggregate : Aggregate
         var registry = new EventTypeRegistry();
         registry.Register<UserCreated>(nameof(UserCreated));
         registry.Register<PhoneNumberAssigned>(nameof(PhoneNumberAssigned));
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
         var store =
             new EventStore(
-                new NpgsqlConnection(_postgres.GetConnectionString()),
+                factory,
                 registry);
         await store.Init();
         var streamId = new Guid("4FB49AB5-9153-4070-A0E8-2F451BCD0BF5");
@@ -362,18 +377,20 @@ public class UserAggregate : Aggregate
         var registry = new EventTypeRegistry();
         registry.Register<UserCreated>(nameof(UserCreated));
         registry.Register<PhoneNumberAssigned>(nameof(PhoneNumberAssigned));
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
         var store =
             new EventStore(
-                new NpgsqlConnection(_postgres.GetConnectionString()),
+                factory,
                 registry);
         await store.Init();
 
         //create snapshot table
         await using var connection =
-            new NpgsqlConnection(_postgres.GetConnectionString());
+            factory.GetConnection();
 
         var sqlSnapshotter = new SqlSnapshotter<UserAggregate>(
-            new NpgsqlConnection(_postgres.GetConnectionString()),
+            connection,
             """
             INSERT INTO "user" (streamid, version, name, phone_number) VALUES (@streamid, @version, @name, @phoneNumber)
             ON CONFLICT (streamid) DO UPDATE SET version = @version, name = @name, phone_number = @phoneNumber
@@ -390,18 +407,22 @@ public class UserAggregate : Aggregate
         await store.Store(user);
 
         var aggregate =
-            await store.AggregateStreamFromSnapshot<UserAggregate>(JohnDoeStreamId);
+            await store.AggregateStreamFromSnapshot<UserAggregate>(
+                JohnDoeStreamId);
         aggregate.Name.Should().Be("JohnDoe");
         aggregate.PhoneNumber.Should().Be("123456789");
         aggregate.Version.Should().Be(2);
         aggregate.StreamId.Should().Be(JohnDoeStreamId);
 
-        await store.AppendEvent(new PhoneNumberAssigned("987654321"), JohnDoeStreamId,
+        await store.AppendEvent(new PhoneNumberAssigned("987654321"),
+            JohnDoeStreamId,
             aggregate.Version
         );
-        
-        aggregate = await store.AggregateStreamFromSnapshot<UserAggregate>(JohnDoeStreamId);
-        
+
+        aggregate =
+            await store.AggregateStreamFromSnapshot<UserAggregate>(
+                JohnDoeStreamId);
+
         aggregate.Name.Should().Be("JohnDoe");
         aggregate.PhoneNumber.Should().Be("987654321");
     }

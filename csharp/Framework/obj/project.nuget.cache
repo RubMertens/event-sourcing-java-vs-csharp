@@ -1,12 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "ag+AhE4bVdkpREGrimFRpbI1F8dQK6PC8dGLzncY1eVqJzNG3LzlCnlwrlk33RB2XNNH1LR41lNYFt/fOxrxOg==",
+  "dgSpecHash": "7APKac+5li87uiMg98GxC/0xu7VlqZFU/h/jzAhzHl62IPydSRuJTMw+8XF9KbkcliM2VQqQsE6l62Y6rDgw5Q==",
   "success": true,
   "projectFilePath": "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Ruben\\.nuget\\packages\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",
+    "C:\\Users\\Ruben\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\8.0.0\\microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\Ruben\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\Ruben\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Ruben\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
     "C:\\Users\\Ruben\\.nuget\\packages\\npgsql\\8.0.3\\npgsql.8.0.3.nupkg.sha512"
   ],
   "logs": []
