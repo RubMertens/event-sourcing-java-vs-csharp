@@ -63,7 +63,7 @@ public class UserSnapshotTable : Migration
     {
         Execute(@"
                 CREATE TABLE IF NOT EXISTS ""user"" (
-                    ""streamid"" UUID NOT NULL PRIMARY KEY,
+                    ""streamid"" VARCHAR(255) NOT NULL PRIMARY KEY,
                     ""version"" INT NOT NULL,
                     ""name"" TEXT NOT NULL,
                     ""phone_number"" TEXT

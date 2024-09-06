@@ -5,10 +5,10 @@ using Framework.Aggregates;
 namespace Framework.Snapshotting;
 
 public class SqlSnapshotter<TAggregate>(
-        IDbConnection connection,
-        string updateStatement,
-        string loadStatement
-    ) : ISnapshotter<TAggregate>
+    IDbConnection connection,
+    string updateStatement,
+    string loadStatement
+) : ISnapshotter<TAggregate>
     where TAggregate : IAggregate
 {
     public async Task Persist(TAggregate aggregate)
@@ -18,12 +18,26 @@ public class SqlSnapshotter<TAggregate>(
 
     public Task<TAggregate> Load(StreamId streamId)
     {
-        throw new NotImplementedException();
+        return connection.QuerySingleAsync<TAggregate>(loadStatement,
+            new { streamId = streamId.ToString() });
     }
 
-    public async Task<TAggregate> Load(Guid streamId)
+    static SqlSnapshotter()
     {
-        return await connection.QuerySingleAsync<TAggregate>(loadStatement,
-            new { streamId });
+        SqlMapper.AddTypeHandler(new StreamIdTypeHandler());
+    }
+}
+public class StreamIdTypeHandler : SqlMapper.TypeHandler<StreamId>
+{
+    public override StreamId Parse(object value)
+    {
+        var str = (string)value;
+        var parts = str.Split('-');
+        return new StreamId(parts[0], parts[1]);
+    }
+
+    public override void SetValue(IDbDataParameter parameter, StreamId value)
+    {
+        parameter.Value = value.ToString();
     }
 }
