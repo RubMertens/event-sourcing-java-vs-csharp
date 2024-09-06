@@ -9,22 +9,10 @@ public interface IDbConnectionFactory
 }
 
 public class NpgSqlConnectionFactory(string connectionString)
-    : IDisposable, IAsyncDisposable, IDbConnectionFactory
+    : IDbConnectionFactory
 {
-    private NpgsqlConnection _connection = new(connectionString);
-
     public DbConnection GetConnection()
     {
-        return _connection;
-    }
-
-    public void Dispose()
-    {
-        _connection.Dispose();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await _connection.DisposeAsync();
+        return new NpgsqlConnection(connectionString);
     }
 }

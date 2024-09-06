@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace Framework.EventSerialization;
 
 public class EventTypeRegistry : IEventTypeRegistrar, IEventTypeRegistry
@@ -7,8 +9,28 @@ public class EventTypeRegistry : IEventTypeRegistrar, IEventTypeRegistry
 
     public IEventTypeRegistrar Register<T>(string eventType)
     {
-        _registryByName[eventType] = typeof(T);
-        _registryByType[typeof(T)] = eventType;
+        Register(typeof(T), eventType);
+        return this;
+    }
+
+    private void Register(Type type, string eventType)
+    {
+        _registryByName[eventType] = type;
+        _registryByType[type] = eventType;
+    }
+
+    public IEventTypeRegistrar RegisterAllInAssemblyOf<TTypeInAssembly>()
+    {
+        var assembly = typeof(TTypeInAssembly).Assembly;
+        var types = assembly.GetTypes()
+                .Where(t => t.GetCustomAttribute<EventTypeAttribute>() != null)
+            ;
+        foreach (var type in types)
+        {
+            var attribute = type.GetCustomAttribute<EventTypeAttribute>();
+            Register(type, attribute.Name);
+        }
+
         return this;
     }
 
@@ -20,5 +42,16 @@ public class EventTypeRegistry : IEventTypeRegistrar, IEventTypeRegistry
     public string GetNameByType(Type eventType)
     {
         return _registryByType[eventType];
+    }
+}
+
+[AttributeUsage(AttributeTargets.Class)]
+public class EventTypeAttribute : Attribute
+{
+    public string Name { get; }
+
+    public EventTypeAttribute(string name)
+    {
+        Name = name;
     }
 }

@@ -305,6 +305,34 @@ public class EventStoreTests
     }
 
     [Test]
+    public async Task ShouldReturnAggregateWhenProjectingEvents()
+    {
+        var registry = new EventTypeRegistry();
+        registry.Register<UserCreated>(nameof(UserCreated));
+        registry.Register<PhoneNumberAssigned>(nameof(PhoneNumberAssigned));
+        var factory =
+            new NpgSqlConnectionFactory(_postgres.GetConnectionString());
+        var store =
+            new EventStore(
+                factory,
+                registry);
+        await store.Init();
+        
+        var streamId = new StreamId(UserAggregate.StreamName, "1");
+        var userCreated = new UserCreated(streamId, "Jefry");
+        await store.AppendEvent(userCreated, streamId, 0);
+        
+        var phoneNumberAssigned = new PhoneNumberAssigned("123456789");
+        await store.AppendEvent(phoneNumberAssigned, streamId, 1);
+        
+        var aggregate = await store.AggregateStream<UserAggregate>(streamId);
+        
+        aggregate.Name.Should().Be("Jefry");
+        aggregate.PhoneNumber.Should().Be("123456789");
+        aggregate.Version.Should().Be(2);
+    }
+    
+    [Test]
     public async Task AbleToAggregateIntoStream()
     {
         var registry = new EventTypeRegistry();

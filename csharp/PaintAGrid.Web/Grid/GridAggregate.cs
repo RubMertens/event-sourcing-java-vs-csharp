@@ -12,14 +12,14 @@ public class GridAggregate : Aggregate
 
     public GridCell[][] Cells { get; set; }
 
-    public GridAggregate(int id, string name, int width, int height)
+    public GridAggregate(long id, string name, int width, int height)
     {
         var gridCreated = new GridCreated(id, name, width, height);
         EnqueueEvent(gridCreated);
         Apply(gridCreated);
     }
 
-    private GridAggregate()
+    public GridAggregate()
     {
     }
 
@@ -68,7 +68,7 @@ public class GridAggregate : Aggregate
         Cells[evt.NewX][evt.NewY] = cell;
     }
 
-    public static StreamId StreamIdFromId(int id) =>
+    public static StreamId StreamIdFromId(long id) =>
         new StreamId(GridAggregate.StreamName, id.ToString());
 }
 

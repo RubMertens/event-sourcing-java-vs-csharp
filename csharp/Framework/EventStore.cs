@@ -93,6 +93,7 @@ public class EventStore(
         foreach (var @event in events)
         {
             aggregate.InvokeApplyMethod(@event);
+            //todo fix version here
         }
 
         return aggregate;

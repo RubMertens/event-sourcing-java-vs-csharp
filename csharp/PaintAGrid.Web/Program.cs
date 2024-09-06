@@ -1,11 +1,9 @@
-using System.Data;
 using Framework;
 using Framework.EventSerialization;
 using Framework.SqlConnection;
 using PaintAGrid.Web;
 using PaintAGrid.Web.Grid;
 using PaintAGrid.Web.Grid.Identity;
-using SimpleMigrations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +16,7 @@ builder.Services.AddSingleton<IEventTypeRegistry>(p =>
     p.GetRequiredService<EventTypeRegistry>());
 builder.Services.AddSingleton<IEventTypeRegistrar>(p =>
     p.GetRequiredService<EventTypeRegistry>());
+builder.Services.AddScoped<GridIdentityGenerator>();
 
 builder.Services.AddScoped<EventStore>();
 
@@ -38,9 +37,7 @@ var app = builder.Build();
 
 app.Services
     .GetRequiredService<IEventTypeRegistrar>()
-    .Register<GridCreated>("GridCreated")
-    .Register<PixelColored>("PixelColored")
-    .Register<PixelMoved>("PixelMoved")
+    .RegisterAllInAssemblyOf<Program>()
     ;
 
 
@@ -107,8 +104,11 @@ app.MapPost("/grids/{id}/move",
 
 app.Run();
 
-record CreateGrid(int Width, int Height, string Name);
+namespace PaintAGrid.Web
+{
+    record CreateGrid(int Width, int Height, string Name);
 
-record ColorPixel(int x, int y, string color);
+    record ColorPixel(int x, int y, string color);
 
-record MovePixel(int x, int y, int deltaX, int deltaY);
+    record MovePixel(int x, int y, int deltaX, int deltaY);
+}

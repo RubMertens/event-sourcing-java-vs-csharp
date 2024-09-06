@@ -1,6 +1,6 @@
 using SimpleMigrations;
 
-namespace PaintAGrid.Web.Grid;
+namespace PaintAGrid.Web.Grid.Migrations;
 
 [Migration(1, "Create Grid Table")]
 public class CreateGridMigration : Migration

@@ -1,6 +1,6 @@
 using SimpleMigrations;
 
-namespace PaintAGrid.Web.Grid;
+namespace PaintAGrid.Web.Grid.Migrations;
 
 [Migration(2, "Create Grid Identity Generator")]
 public class CreateGridIdentityGenerator : Migration
