@@ -151,10 +151,7 @@ public class EventStoreTests
         await store.Init();
 
         var evt = new UserCreated(JohnDoeStreamId, "JohnDoe");
-        Assert.DoesNotThrowAsync(async () =>
-        {
-            await store.AppendEvent(evt, JohnDoeStreamId, null);
-        });
+        Assert.DoesNotThrowAsync(async () => { await store.AppendEvent(evt, JohnDoeStreamId, null); });
     }
 
     [Test]
@@ -408,7 +405,7 @@ public class EventStoreTests
 
         store.RegisterSnapshot(sqlSnapshotter);
 
-        var user = new UserAggregate(JohnDoeStreamId, "JohnDoe");
+        var user = new UserAggregate(int.Parse(JohnDoeStreamId.Id), "JohnDoe");
         user.ChangePhoneNumber("123456789");
         await store.Store(user);
 

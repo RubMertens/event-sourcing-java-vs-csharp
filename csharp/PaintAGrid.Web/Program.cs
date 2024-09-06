@@ -4,6 +4,7 @@ using Framework.EventSerialization;
 using Framework.SqlConnection;
 using PaintAGrid.Web;
 using PaintAGrid.Web.Grid;
+using PaintAGrid.Web.Grid.Identity;
 using SimpleMigrations;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,9 +59,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/grids/{id}", async (EventStore eventStore, Guid id) =>
+app.MapGet("/grids/{id}", async (EventStore eventStore, int id) =>
 {
-    var grid = eventStore.AggregateStreamFromSnapshot<GridAggregate>(id);
+    var grid = eventStore.AggregateStreamFromSnapshot<GridAggregate>(GridAggregate.StreamIdFromId(id));
     return grid;
 });
 
@@ -69,12 +70,12 @@ app.MapGet("/grids",
 
 app.MapPost("/grids", async (
     CreateGrid createGrid,
-    EventStore store
+    EventStore store,
+    GridIdentityGenerator identityGenerator
 ) =>
 {
-    
     var grid = new GridAggregate(
-        ,
+        await identityGenerator.GetNext(),
         createGrid.Name,
         createGrid.Width,
         createGrid.Height

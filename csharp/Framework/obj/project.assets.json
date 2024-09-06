@@ -322,19 +322,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Ruben\\.nuget\\packages\\": {}
+    "D:\\packages\\NuGet\\cache": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj",
+      "projectUniqueName": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj",
       "projectName": "Framework",
-      "projectPath": "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj",
-      "packagesPath": "C:\\Users\\Ruben\\.nuget\\packages\\",
-      "outputPath": "E:\\_Projects\\event-sourcing-java-vs-csharp\\csharp\\Framework\\obj\\",
+      "projectPath": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\Framework\\Framework.csproj",
+      "packagesPath": "D:\\packages\\NuGet\\cache",
+      "outputPath": "D:\\_project\\event-sourcing-java-vs-csharp\\csharp\\Framework\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Ruben\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\RubenM\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -352,6 +352,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -387,7 +392,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.304/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
