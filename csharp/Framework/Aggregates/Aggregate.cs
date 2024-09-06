@@ -1,8 +1,8 @@
-namespace Framework;
+namespace Framework.Aggregates;
 
 public abstract class Aggregate : IAggregate
 {
-    public Guid StreamId { get; protected set; }
+    public StreamId StreamId { get; protected set; }
     public int Version { get; protected set; } = 0;
 
     private readonly List<object> _uncommittedEvents = new();

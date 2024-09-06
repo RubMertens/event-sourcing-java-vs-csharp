@@ -1,11 +1,10 @@
 using System.Data;
 using Dapper;
-using Npgsql;
+using Framework.Aggregates;
 
-namespace Framework;
+namespace Framework.Snapshotting;
 
-public class
-    SqlSnapshotter<TAggregate>(
+public class SqlSnapshotter<TAggregate>(
         IDbConnection connection,
         string updateStatement,
         string loadStatement
@@ -15,6 +14,11 @@ public class
     public async Task Persist(TAggregate aggregate)
     {
         await connection.ExecuteAsync(updateStatement, aggregate);
+    }
+
+    public Task<TAggregate> Load(StreamId streamId)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<TAggregate> Load(Guid streamId)

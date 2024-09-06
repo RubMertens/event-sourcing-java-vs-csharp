@@ -1,4 +1,4 @@
-namespace Framework;
+namespace Framework.Exceptions;
 
 public class ConcurrencyException : Exception
 {

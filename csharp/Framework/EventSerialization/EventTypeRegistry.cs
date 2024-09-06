@@ -1,4 +1,4 @@
-namespace Framework;
+namespace Framework.EventSerialization;
 
 public class EventTypeRegistry : IEventTypeRegistrar, IEventTypeRegistry
 {

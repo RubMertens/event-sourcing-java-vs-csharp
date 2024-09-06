@@ -3,26 +3,32 @@ using System.Net;
 using System.Runtime.InteropServices.JavaScript;
 using Dapper;
 using FluentAssertions;
+using Framework.Aggregates;
+using Framework.EventSerialization;
+using Framework.Exceptions;
+using Framework.Snapshotting;
+using Framework.SqlConnection;
 using Npgsql;
-using PaintAGrid.Web.SqlConnection;
 using SimpleMigrations;
 using SimpleMigrations.DatabaseProvider;
 using Testcontainers.PostgreSql;
 
 namespace Framework.Tests;
 
-public record UserCreated(Guid Id, string Name);
+public record UserCreated(StreamId Id, string Name);
 
 public record PhoneNumberAssigned(string PhoneNumber);
 
 public class UserAggregate : Aggregate
 {
+    public const string StreamName = "USER";
     public string Name { get; set; }
     public string PhoneNumber { get; set; }
 
-    public UserAggregate(Guid id, string name)
+    public UserAggregate(int id, string name)
     {
-        var userCreated = new UserCreated(id, name);
+        var userCreated =
+            new UserCreated(new StreamId(StreamName, id.ToString()), name);
         EnqueueEvent(userCreated);
         Apply(userCreated);
     }
@@ -78,8 +84,8 @@ public class EventStoreTests
         .WithCleanUp(true)
         .Build();
 
-    private static readonly Guid JohnDoeStreamId =
-        new Guid("4FB49AB5-9153-4070-A0E8-2F451BCD0BF5");
+    private static readonly StreamId JohnDoeStreamId =
+        new StreamId("USER", "1");
 
     [OneTimeSetUp]
     public async Task OneTimeSetup()
@@ -128,7 +134,7 @@ public class EventStoreTests
 
         await eventStore.Init();
         var @event = new UserCreated(JohnDoeStreamId, "JohnDoe");
-        var streamId = new Guid("4FB49AB5-9153-4070-A0E8-2F451BCD0BF5");
+        var streamId = new StreamId("USER", "1");
         await eventStore.AppendEvent(@event, streamId, null);
     }
 
@@ -188,7 +194,7 @@ public class EventStoreTests
 
         var evt = new UserCreated(JohnDoeStreamId, "JohnDoe");
         var secondEvent =
-            new UserCreated(new Guid("9099AC67-DDB6-4E9A-81A5-5900EEEEE507"),
+            new UserCreated(new StreamId("USER", "2"),
                 "JaneDoe");
 
         await store.AppendEvent(evt, JohnDoeStreamId,
@@ -289,9 +295,9 @@ public class EventStoreTests
         }
 
 
-        var otherStreamId = new Guid("4517FDBA-ECD6-4215-8791-36DF3B7E97C3");
+        var otherStreamId = new StreamId(UserAggregate.StreamName, "3");
         await store.AppendEvent(
-            new UserCreated(new Guid("4941E58E-B543-4BCE-967A-5C9698061E4D"),
+            new UserCreated(new StreamId(UserAggregate.StreamName, "2"),
                 "JaneDoe"),
             otherStreamId, null);
 
@@ -315,7 +321,7 @@ public class EventStoreTests
                 factory,
                 registry);
         await store.Init();
-        var streamId = new Guid("4FB49AB5-9153-4070-A0E8-2F451BCD0BF5");
+        var streamId = new StreamId("USER", "1");
         object[] events =
         [
             new UserCreated(JohnDoeStreamId, "JohnDoe"),
@@ -346,7 +352,7 @@ public class EventStoreTests
                 factory,
                 registry);
         await store.Init();
-        var streamId = new Guid("4FB49AB5-9153-4070-A0E8-2F451BCD0BF5");
+        var streamId = new StreamId(UserAggregate.StreamName, "1");
         object[] events =
         [
             new UserCreated(JohnDoeStreamId, "JohnDoe"),

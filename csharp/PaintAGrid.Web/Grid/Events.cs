@@ -1,6 +1,6 @@
 namespace PaintAGrid.Web.Grid;
 
-public record GridCreated(Guid Id, string Name, int Width, int Height);
+public record GridCreated(int Id, string Name, int Width, int Height);
 
 public record PixelColored(int X, int Y, string Color);
 

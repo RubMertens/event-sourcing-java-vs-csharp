@@ -1,7 +1,12 @@
 using System.Text.Json;
+using System.Text.Json;
 using Dapper;
+using Framework.Aggregates;
+using Framework.EventSerialization;
+using Framework.Exceptions;
+using Framework.Snapshotting;
+using Framework.SqlConnection;
 using Npgsql;
-using PaintAGrid.Web.SqlConnection;
 
 namespace Framework;
 
@@ -45,7 +50,8 @@ public class EventStore(
     }
 
     public async Task<TAggregate> AggregateStreamFromSnapshot<TAggregate>(
-        Guid streamId)
+        StreamId streamId
+    )
         where TAggregate : IAggregate
     {
         var snapshotHandler =
@@ -68,7 +74,7 @@ public class EventStore(
         return aggregate;
     }
 
-    public async Task<TAggregate> AggregateStream<TAggregate>(Guid streamId,
+    public async Task<TAggregate> AggregateStream<TAggregate>(StreamId streamId,
         int? untilVerion = null)
     {
         var events = untilVerion.HasValue
@@ -92,7 +98,7 @@ public class EventStore(
         return aggregate;
     }
 
-    public async Task<IEnumerable<object>> GetEventFrom(Guid streamId,
+    public async Task<IEnumerable<object>> GetEventFrom(StreamId streamId,
         int fromVersion)
     {
         var connection = connectionFactory.GetConnection();
@@ -103,7 +109,7 @@ public class EventStore(
                 WHERE stream_id = :p_stream_id AND position >= :p_from_version
                 ORDER BY position
             """,
-            new { p_stream_id = streamId, p_from_version = fromVersion });
+            new { p_stream_id = streamId.ToString(), p_from_version = fromVersion });
 
         return results
             .Select(result =>
@@ -112,7 +118,7 @@ public class EventStore(
             );
     }
 
-    public async Task<IEnumerable<object>> GetEventsUntil(Guid streamId,
+    public async Task<IEnumerable<object>> GetEventsUntil(StreamId streamId,
         int untilVersion)
     {
         var connection = connectionFactory.GetConnection();
@@ -123,7 +129,7 @@ public class EventStore(
                 WHERE stream_id = :p_stream_id AND position <= :p_until_version
                 ORDER BY position
             """,
-            new { p_stream_id = streamId, p_until_version = untilVersion });
+            new { p_stream_id = streamId.ToString(), p_until_version = untilVersion });
 
         return results
             .Select(result =>
@@ -132,7 +138,7 @@ public class EventStore(
             );
     }
 
-    public async Task<IEnumerable<object>> GetEvents(Guid streamId)
+    public async Task<IEnumerable<object>> GetEvents(StreamId streamId)
     {
         var connection = connectionFactory.GetConnection();
         var results = await connection.QueryAsync<dynamic>(
@@ -142,7 +148,7 @@ public class EventStore(
                 WHERE stream_id = :p_stream_id 
                 ORDER BY position
             """,
-            new { p_stream_id = streamId });
+            new { p_stream_id = streamId.ToString() });
 
         return results
             .Select(result =>
@@ -151,7 +157,7 @@ public class EventStore(
             );
     }
 
-    public async Task AppendEvent(object @event, Guid streamId,
+    public async Task AppendEvent(object @event, StreamId streamId,
         long? expectedVersion)
     {
         try
@@ -164,7 +170,7 @@ public class EventStore(
                     p_event = JsonSerializer.Serialize(@event),
                     p_event_type =
                         eventTypeRegistry.GetNameByType(@event.GetType()),
-                    p_stream_id = streamId,
+                    p_stream_id = streamId.ToString(),
                     p_expected_version = expectedVersion ?? 0
                 });
         }
@@ -180,7 +186,7 @@ public class EventStore(
         await connection.ExecuteAsync("""
                                       CREATE TABLE IF NOT EXISTS event_store (
                                           id SERIAL PRIMARY KEY,
-                                          stream_id UUID NOT NULL,
+                                          stream_id TEXT NOT NULL,
                                           position BIGINT NOT NULL,
                                           event_type TEXT NOT NULL,
                                           event_data JSONB NOT NULL,
@@ -198,7 +204,7 @@ public class EventStore(
                                         CREATE OR REPLACE FUNCTION append_event(
                                                                   p_event JSONB,
                                                                   p_event_type TEXT,
-                                                                  p_stream_id UUID,
+                                                                  p_stream_id TEXT,
                                                                   p_expected_version BIGINT
                                                               ) RETURNS VOID AS $$
                                                               DECLARE

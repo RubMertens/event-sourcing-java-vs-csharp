@@ -1,8 +1,8 @@
-namespace Framework;
+namespace Framework.Aggregates;
 
 public interface IAggregate
 {
-    Guid StreamId { get; }
+    StreamId StreamId { get; }
     int Version { get; }
 
     IEnumerable<object> DequeueUncommittedEvents();

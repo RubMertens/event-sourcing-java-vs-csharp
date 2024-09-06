@@ -1,5 +1,5 @@
+using Framework.SqlConnection;
 using Npgsql;
-using PaintAGrid.Web.SqlConnection;
 using SimpleMigrations;
 using SimpleMigrations.DatabaseProvider;
 

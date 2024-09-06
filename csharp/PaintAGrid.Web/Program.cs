@@ -1,8 +1,9 @@
 using System.Data;
 using Framework;
+using Framework.EventSerialization;
+using Framework.SqlConnection;
 using PaintAGrid.Web;
 using PaintAGrid.Web.Grid;
-using PaintAGrid.Web.SqlConnection;
 using SimpleMigrations;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,16 +35,19 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 
-app.Services.GetRequiredService<IEventTypeRegistrar>()
+app.Services
+    .GetRequiredService<IEventTypeRegistrar>()
     .Register<GridCreated>("GridCreated")
     .Register<PixelColored>("PixelColored")
     .Register<PixelMoved>("PixelMoved")
     ;
 
+
 using (var scope = app.Services.CreateScope())
 {
     scope.ServiceProvider.GetRequiredService<MigrationExecution>()
         .Migrate();
+    await scope.ServiceProvider.GetRequiredService<EventStore>().Init();
 }
 
 if (app.Environment.IsDevelopment())
@@ -54,8 +58,56 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/weatherforecast", () => { })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
+app.MapGet("/grids/{id}", async (EventStore eventStore, Guid id) =>
+{
+    var grid = eventStore.AggregateStreamFromSnapshot<GridAggregate>(id);
+    return grid;
+});
+
+app.MapGet("/grids",
+    async (EventStore store) => { throw new NotImplementedException(); });
+
+app.MapPost("/grids", async (
+    CreateGrid createGrid,
+    EventStore store
+) =>
+{
+    
+    var grid = new GridAggregate(
+        ,
+        createGrid.Name,
+        createGrid.Width,
+        createGrid.Height
+    );
+    await store.Store(grid);
+    return grid;
+});
+
+app.MapPost("/grids/{id}/color",
+    async (int id, ColorPixel pixel, EventStore store) =>
+    {
+        var grid =
+            await store.AggregateStreamFromSnapshot<GridAggregate>(
+                GridAggregate.StreamIdFromId(id));
+        grid.ColorPixel(pixel.x, pixel.y, pixel.color);
+        await store.Store(grid);
+        return grid;
+    });
+
+app.MapPost("/grids/{id}/move",
+    async (int id, MovePixel move, EventStore store) =>
+    {
+        var grid = await store.AggregateStreamFromSnapshot<GridAggregate>(GridAggregate.StreamIdFromId(id));
+        grid.MovePixel(move.x, move.y, move.deltaX, move.deltaY);
+        await store.Store(grid);
+        return grid;
+    });
+
 
 app.Run();
+
+record CreateGrid(int Width, int Height, string Name);
+
+record ColorPixel(int x, int y, string color);
+
+record MovePixel(int x, int y, int deltaX, int deltaY);

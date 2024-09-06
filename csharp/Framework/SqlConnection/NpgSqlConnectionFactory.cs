@@ -1,8 +1,7 @@
 using System.Data.Common;
-using Microsoft.Extensions.Configuration;
 using Npgsql;
 
-namespace PaintAGrid.Web.SqlConnection;
+namespace Framework.SqlConnection;
 
 public interface IDbConnectionFactory
 {
