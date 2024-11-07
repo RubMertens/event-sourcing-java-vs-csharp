@@ -51,3 +51,5 @@ CREATE TABLE IF NOT EXISTS grid_cells (
                                           color TEXT NOT NULL,
                                           PRIMARY KEY (grid_id, x, y)
 );
+
+CREATE SEQUENCE IF NOT EXISTS grid_id_seq
